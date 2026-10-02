@@ -94,7 +94,8 @@ async function fdcFetch<T>(path: string, apiKey: string): Promise<T> {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     let response: Response;
     try {
-      response = await fetch(url);
+      // Don't let a hanging USDA request hold the client: give up after 8 s.
+      response = await fetch(url, { signal: AbortSignal.timeout(8000) });
     } catch {
       if (attempt < 2) {
         await delay(250 * (attempt + 1));

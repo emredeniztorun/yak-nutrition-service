@@ -68,14 +68,48 @@ function sendError(res: ServerResponse, code: NutritionLookupError['code'], mess
   sendJson(res, statusForErrorCode(code), body);
 }
 
+/** A lookup body is a few dozen bytes; anything bigger is rejected unread. */
+const MAX_BODY_BYTES = 4 * 1024;
+
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
+  let size = 0;
   for await (const chunk of req) {
+    size += (chunk as Buffer).length;
+    if (size > MAX_BODY_BYTES) throw new Error('Request body too large.');
     chunks.push(chunk as Buffer);
   }
   const raw = Buffer.concat(chunks).toString('utf8');
   if (raw.trim().length === 0) return {};
   return JSON.parse(raw);
+}
+
+/**
+ * Simple per-client rate limit (fixed 1-minute window, in memory) so one
+ * client cannot exhaust the shared USDA API key quota. Generous for real
+ * use: a person logging food makes only a few lookups per minute.
+ */
+const RATE_LIMIT_PER_MINUTE = 60;
+const rateWindows = new Map<string, { windowStart: number; count: number }>();
+
+function clientId(req: IncomingMessage): string {
+  // Behind Render's proxy the real client is the first X-Forwarded-For entry.
+  const forwarded = req.headers['x-forwarded-for'];
+  const first = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0]?.trim();
+  return first || req.socket.remoteAddress || 'unknown';
+}
+
+function isRateLimited(req: IncomingMessage): boolean {
+  const now = Date.now();
+  const id = clientId(req);
+  const entry = rateWindows.get(id);
+  if (!entry || now - entry.windowStart >= 60_000) {
+    if (rateWindows.size > 10_000) rateWindows.clear();
+    rateWindows.set(id, { windowStart: now, count: 1 });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_PER_MINUTE;
 }
 
 /**
@@ -101,8 +135,20 @@ export function createNutritionHandler(provider: NutritionProvider | null) {
       return;
     }
 
+    if (req.method === 'GET' && req.url === '/health') {
+      sendJson(res, 200, { ok: true });
+      return;
+    }
+
     if (req.method !== 'POST' || req.url !== '/v1/nutrition/lookup') {
       sendJson(res, 404, { error: { code: 'not_found', message: 'Unknown route.' } });
+      return;
+    }
+
+    if (isRateLimited(req)) {
+      sendJson(res, 429, {
+        error: { code: 'provider_unavailable', message: 'Too many requests. Please try again in a minute.' },
+      });
       return;
     }
 
