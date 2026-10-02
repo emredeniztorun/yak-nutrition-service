@@ -1,4 +1,5 @@
 import { createServer, IncomingMessage, ServerResponse } from 'node:http';
+import { PRIVACY_HTML } from './privacyPage';
 
 import { FoodQuery, FoodUnit, NutritionLookupError, NutritionErrorBody } from './types';
 import type { NutritionProvider } from './providers/NutritionProvider';
@@ -132,6 +133,12 @@ export function createNutritionHandler(provider: NutritionProvider | null) {
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
       res.end();
+      return;
+    }
+
+    if (req.method === 'GET' && (req.url === '/privacy' || req.url === '/privacy/')) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' });
+      res.end(PRIVACY_HTML);
       return;
     }
 
