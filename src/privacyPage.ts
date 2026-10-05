@@ -19,7 +19,7 @@ export const PRIVACY_HTML = `<!doctype html>
 </head>
 <body>
 <h1>YAK – Gizlilik Politikası</h1>
-<p class="muted">Yürürlük tarihi: 2 Ekim 2026 · <a href="#en">English version below</a></p>
+<p class="muted">Yürürlük tarihi: 5 Ekim 2026 · <a href="#en">English version below</a></p>
 
 <p>Bu politika, YAK mobil uygulamasının ("YAK") hangi verileri işlediğini açıklar. YAK hesap oluşturmaz; reklam, analiz veya izleme araçları kullanmaz.</p>
 
@@ -28,7 +28,8 @@ export const PRIVACY_HTML = `<!doctype html>
 <ul>
   <li>Profil bilgileri: adınız, yaşınız, boyunuz, kilonuz, cinsiyetiniz ve aktivite seviyeniz,</li>
   <li>Hedefleriniz (hedef türü, günlük kalori ve makro hedefleri),</li>
-  <li>Kaydettiğiniz öğünler ve besinler (geçmiş ve planlanan günler dahil).</li>
+  <li>Kaydettiğiniz öğünler ve besinler (geçmiş ve planlanan günler dahil),</li>
+  <li>Kilo takibi kayıtlarınız (tartı sonuçları ve tarihleri, hedef kilonuz, kilo trendine göre yapılan kalori hedefi ayarı) ve işaretlediğiniz antrenman günleri.</li>
 </ul>
 <p>Uygulama, veri güncellemelerinden önce bu verilerin yedeğini yine yalnızca cihazınızda oluşturabilir.</p>
 
@@ -66,12 +67,12 @@ export const PRIVACY_HTML = `<!doctype html>
 <hr>
 
 <h1 id="en">YAK – Privacy Policy</h1>
-<p class="muted">Effective date: 2 October 2026</p>
+<p class="muted">Effective date: 5 October 2026</p>
 
 <p>This policy explains what data the YAK mobile app ("YAK") processes. YAK has no user accounts and uses no advertising, analytics or tracking tools.</p>
 
 <h2>1. Data stored on your device</h2>
-<p>The following is stored only on your phone, in the app's local storage, and is not sent to our servers: your profile (name, age, height, weight, gender, activity level), your goals (goal type, daily calorie and macro targets), and the meals and foods you log (including past and planned days). Before data updates, the app may create a backup of this data, also only on your device.</p>
+<p>The following is stored only on your phone, in the app's local storage, and is not sent to our servers: your profile (name, age, height, weight, gender, activity level), your goals (goal type, daily calorie and macro targets), the meals and foods you log (including past and planned days), and your weight-tracking records (weigh-ins and their dates, your target weight, the calorie-target adjustment based on your weight trend) and the workout days you mark. Before data updates, the app may create a backup of this data, also only on your device.</p>
 
 <h2>2. Data sent when you search for a food</h2>
 <p>To calculate nutrition values automatically, the app sends only the following to the YAK nutrition server (<code>yak-nutrition-service.onrender.com</code>) over an encrypted connection (HTTPS): the food name you typed, and the amount and unit (e.g. 100 grams, 1 portion). The request contains no profile information, goals or meal history. Entries where you type the values yourself (manual entries) are never sent.</p>
